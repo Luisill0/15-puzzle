@@ -7,23 +7,23 @@ var currentSpace;
 var adjacentTiles = [];
 var win = false;
 const winState = [
-    [ 't1',  't2',  't3',  't4'],
-    [ 't5',  't6',  't7',  't8'],
-    [ 't9', 't10', 't11', 't12'],
-    ['t13', 't14', 't15', 't0']
+    [ 1,  2,  3,  4],
+    [ 5,  6,  7,  8],
+    [ 9, 10, 11, 12],
+    [13, 14, 15,  0]
 ]
 
 const setGame = () => {
     playerName = prompt('Player\'s name:');
     if(!playerName || playerName.length == 0) {playerName = 'player'};
     startTime = Math.floor(Date.now() / 1000);
-    board = generateBoard();
-    board = toMatrix();
-    while(!isSolvable(board)){
+    while(true){
         board = generateBoard();
         board = toMatrix();
+        if(isSolvable(board)){
+            break;
+        }
     }
-    setBoardIDs();
     displayBoard();
     displayInfo();
 }
@@ -54,58 +54,41 @@ const randomize = (values) => {
     return values;
 }
 
-// https://www.geeksforgeeks.org/check-instance-15-puzzle-solvable/
-// JavaScript program to check if a given instance of N*N-1
-// puzzle is solvable or not
-const N = 4;
+// https://stackoverflow.com/questions/34570344/check-if-15-puzzle-is-solvable#34570524
+// Code by cody-gray https://stackoverflow.com/users/366904/cody-gray
+const isSolvable = (puzzle) =>
+{
+    let parity = 0;
+    let gridWidth = 4;
+    let row = 0; // the current row we are on
+    let blankRow = 0; // the row with the blank tile
 
-// A utility function to count inversions in given
-// array 'arr[]'. Note that this function can be
-// optimized to work in O(n Log n) time. The idea
-// here is to keep code small and simple.
-const getInvCount = (arr) => {
-    let inv_count = 0;
-    for (let i = 0; i < N * N - 1; i++)
+    for (let i = 0; i < puzzle.length; i++)
     {
-        for (let j = i + 1; j < N * N; j++)
-        {
-    
-        // count pairs(arr[i], arr[j]) such that
-        // i < j but arr[i] > arr[j]
-        if (arr[j] && arr[i] && arr[i] > arr[j]){
-            inv_count++;
+        if (i % gridWidth == 0) { // advance to next row
+            row++;
         }
+        if (puzzle[i] == 0) { // the blank tile
+            blankRow = row; // save the row on which encountered
+            continue;
+        }
+        for (let j = i + 1; j < puzzle.length; j++)
+        {
+            if (puzzle[i] > puzzle[j] && puzzle[j] != 0)
+            {
+                parity++;
+            }
         }
     }
-    return inv_count;
-}
 
-// find Position of blank from bottom
-const findXPosition = (puzzle) => {
-  // start from bottom-right corner of matrix
-  for (let i = N - 1; i >= 0; i--)
-    for (let j = N - 1; j >= 0; j--)
-        if (puzzle[i][j] == 0)
-            return N - i;
-}
-
-// This function returns true if given
-// instance of N*N - 1 puzzle is solvable
-const isSolvable = (puzzle) => {
-    // Count inversions in given puzzle
-    let invCount = getInvCount(puzzle);
-    // If grid is odd, return true if inversion
-    // count is even.
-    if (N & 1)
-        return !(invCount & 1);
-    else {// grid is even
-        let pos = findXPosition(puzzle);    
-        if (pos & 1) {
-            return !(invCount & 1);
+    if (gridWidth % 2 == 0) { // even grid
+        if (blankRow % 2 == 0) { // blank on odd row; counting from bottom
+            return parity % 2 == 0;
+        } else { // blank on even row; counting from bottom
+            return parity % 2 != 0;
         }
-        else {
-            return invCount & 1;
-        }
+    } else { // odd grid
+        return parity % 2 == 0;
     }
 }
 
@@ -122,19 +105,11 @@ const toMatrix = () => {
     return newBoard;
 }
 
-const setBoardIDs = () => {
-    for(let i=0; i<4; i++){
-        for(let j=0; j<4; j++){
-            board[i][j] = `t${board[i][j]}`
-        }
-    }
-}
-
 const displayBoard = () => {
     let counter = 0;
     for(let i=0; i<4; i++){
         for(let j=0; j<4; j++){
-            let tileID = `${board[i][j]}`;
+            let tileID = `t${board[i][j]}`;
             document.getElementById(tileID).style.order = counter;
             if(tileID == 't0'){
                 currentSpace = [i,j];
@@ -194,34 +169,34 @@ const getAdjacentTiles = () => {
     if(currentSpace[0] - 1 >= 0) {
         let row = currentSpace[0] - 1;
         let col = currentSpace[1];
-        adjacentTiles.push(`${board[row][col]}`);
+        adjacentTiles.push(board[row][col]);
     }
 
     // Lower
     if(currentSpace[0] + 1 <= 3) {
         let row = currentSpace[0] + 1;
         let col = currentSpace[1];
-        adjacentTiles.push(`${board[row][col]}`);
+        adjacentTiles.push(board[row][col]);
     }
 
     // Left
     if(currentSpace[1] - 1 >= 0) {
         let row = currentSpace[0];
         let col = currentSpace[1] - 1;
-        adjacentTiles.push(`${board[row][col]}`);
+        adjacentTiles.push(board[row][col]);
     }
 
     // Right
     if(currentSpace[1] + 1 <= 3) {
         let row = currentSpace[0];
         let col = currentSpace[1] + 1;
-        adjacentTiles.push(`${board[row][col]}`);
+        adjacentTiles.push(board[row][col]);
     }
 }
 
 const styleAdjacentTiles = () => {
     adjacentTiles.forEach((tileID) => {
-        let css = `#${tileID}:hover {cursor: pointer}`;
+        let css = `#t${tileID}:hover {cursor: pointer}`;
         var style = document.createElement('style');
         style.setAttribute('id', 'removable');
 
@@ -256,7 +231,7 @@ const swapTiles = (clickedID) => {
         }
     }
     board[currentSpace[0]][currentSpace[1]] = board[position[0]][position[1]];
-    board[position[0]][position[1]] = 't0';
+    board[position[0]][position[1]] = 0;
     currentSpace = position;
     clearAdjacent();
     displayBoard();

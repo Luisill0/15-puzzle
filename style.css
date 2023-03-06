@@ -1,0 +1,59 @@
+.body {
+    padding: 0;
+    margin: 0;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+}
+
+/*https://www.w3schools.com/howto/howto_css_disable_text_selection.asp*/
+.prevent-select {
+    -webkit-user-select: none; /* Safari */
+    -ms-user-select: none; /* IE 10 and IE 11 */
+    user-select: none; /* Standard syntax */
+}
+
+.gameInfo {
+    display: flex;
+    justify-content: space-evenly;
+    height: 50px;
+    font-size: 20pt;
+}
+
+.gameInfo span:hover {
+    cursor: default; 
+}
+
+.board {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    width: 760px;
+    margin: 0 auto;
+    border: 5px solid purple;
+}
+
+.tile {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 180px;
+    height: 180px;
+    border: 5px solid purple;
+    background-color: blueviolet;
+}
+
+.tile:hover {
+    cursor: default;
+}
+
+.tile span {
+    font-size: 20pt;
+}
+
+.tile span:hover {
+    cursor: inherit;
+}
+
+.empty {
+    background-color: white;
+}

@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>15-Puzzle</title>
+    <link rel="stylesheet" href="style.css" type="text/css"/>
+    <link rel="icon" type="image/x-icon" href="./favicon.ico">
+    <script src="script.js" type="text/javascript"></script>
+</head>
+<body onload="setGame()">
+    <div class="gameInfo prevent-select">
+        <span id="playerName"></span>
+        <span id="time"></span>
+        <span id="moves"></span>
+    </div>
+    <div class="board prevent-select" id="board">
+        <div class="tile empty" id="t0"><span></span></div>
+        <div class="tile" id="t1"  onclick="tileClicked('t1')">  <span> 1</span> </div>
+        <div class="tile" id="t2"  onclick="tileClicked('t2')">  <span> 2</span> </div>
+        <div class="tile" id="t3"  onclick="tileClicked('t3')">  <span> 3</span> </div>
+        <div class="tile" id="t4"  onclick="tileClicked('t4')">  <span> 4</span> </div>
+        <div class="tile" id="t5"  onclick="tileClicked('t5')">  <span> 5</span> </div>
+        <div class="tile" id="t6"  onclick="tileClicked('t6')">  <span> 6</span> </div>
+        <div class="tile" id="t7"  onclick="tileClicked('t7')">  <span> 7</span> </div>
+        <div class="tile" id="t8"  onclick="tileClicked('t8')">  <span> 8</span> </div>
+        <div class="tile" id="t9"  onclick="tileClicked('t9')">  <span> 9</span> </div>
+        <div class="tile" id="t10" onclick="tileClicked('t10')"> <span>10</span> </div>
+        <div class="tile" id="t11" onclick="tileClicked('t11')"> <span>11</span> </div>
+        <div class="tile" id="t12" onclick="tileClicked('t12')"> <span>12</span> </div>
+        <div class="tile" id="t13" onclick="tileClicked('t13')"> <span>13</span> </div>
+        <div class="tile" id="t14" onclick="tileClicked('t14')"> <span>14</span> </div>
+        <div class="tile" id="t15" onclick="tileClicked('t15')"> <span>15</span> </div>
+    </div>
+</body>
+</html>

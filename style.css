@@ -13,7 +13,7 @@
 
 .gameInfo {
     display: flex;
-    justify-content: space-evenly;
+    justify-content: space-around;
     height: 50px;
     font-size: 20pt;
 }
@@ -23,12 +23,11 @@
 }
 
 .board {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: center;
-    width: 760px;
+    display: grid;
     margin: 0 auto;
+    grid-template-columns: repeat(4, auto);
+    justify-content: center;
+    width: fit-content;
     border: 5px solid purple;
 }
 
@@ -36,8 +35,6 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 180px;
-    height: 180px;
     border: 5px solid purple;
     background-color: blueviolet;
 }
@@ -56,4 +53,79 @@
 
 .empty {
     background-color: white;
+}
+
+@media screen and (max-width: 400px) {
+    .gameInfo {
+        font-size: 1.8vh;
+    }
+    
+    .tile {
+        width: 3rem;
+        height: 3rem;
+    }
+
+    .tile span {
+        font-size: 2rem;
+    }
+}
+
+@media screen and (min-width: 401px) and (max-width: 679px) {
+    .gameInfo {
+        font-size: 2vh;
+    }
+    
+    .tile {
+        width: 5rem;
+        height: 5rem;
+    }
+
+    .tile span {
+        font-size: 2rem;
+    }
+}
+
+@media screen and (min-width: 680px) and (max-width: 1023px) {
+    .gameInfo {
+        font-size: 2vh;
+    }
+    
+    .tile {
+        width: 6.5rem;
+        height: 6.5rem;
+    }
+
+    .tile span {
+        font-size: 2rem;
+    }
+}
+
+@media screen and (min-width: 1024px) and (max-width: 1919px) {
+    .gameInfo {
+        font-size: 2.5vh;
+    }
+    
+    .tile {
+        width: 8rem;
+        height: 8rem;
+    }
+
+    .tile span {
+        font-size: 2rem;
+    }
+}
+
+@media screen and (min-width: 1920px) {
+    .gameInfo {
+        font-size: 3vh;
+    }
+    
+    .tile {
+        width: 10rem;
+        height: 10rem;
+    }
+
+    .tile span {
+        font-size: 2.5rem;
+    }
 }

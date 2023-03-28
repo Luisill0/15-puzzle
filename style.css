@@ -25,7 +25,6 @@
 .board {
     display: grid;
     margin: 0 auto;
-    grid-template-columns: repeat(4, auto);
     justify-content: center;
     width: fit-content;
     border: 5px solid purple;
@@ -37,18 +36,13 @@
     justify-content: center;
     border: 5px solid purple;
     background-color: blueviolet;
+    font-size: 20pt;
+    width: 3em;
+    height: 3em;
 }
 
 .tile:hover {
     cursor: default;
-}
-
-.tile span {
-    font-size: 20pt;
-}
-
-.tile span:hover {
-    cursor: inherit;
 }
 
 .empty {

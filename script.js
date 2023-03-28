@@ -6,35 +6,100 @@ var playerName;
 var currentSpace;
 var adjacentTiles = [];
 var win = false;
-const winState = [
-    [ 1,  2,  3,  4],
-    [ 5,  6,  7,  8],
-    [ 9, 10, 11, 12],
-    [13, 14, 15,  0]
-]
+var numTiles = 4;
+let winStates = new Array(2);
 
 const setGame = () => {
     playerName = prompt('Player\'s name:');
     if(!playerName || playerName.length == 0) {playerName = 'player'};
     startTime = Math.floor(Date.now() / 1000);
+    generateWinStates(numTiles);
     while(true){
-        board = generateBoard();
-        board = toMatrix();
-        if(isSolvable(board)){
+        board = generateBoard(numTiles);
+        board = randomize(board);
+        const numInv = getInvCount(board);
+        board = toMatrix(board);
+        const solvable = isSolvable(board, numInv)
+        if(solvable){
             break;
         }
     }
+    generateDocBoard();
     displayBoard();
     displayInfo();
 }
 
-const generateBoard = () => {
-    let board = []
-    for(let i = 1; i < 16; i++){
-        board.push(i);
+const generateWinStates = (numTiles) => {
+    winStates[0] = toMatrix(generateBoard(numTiles));
+
+    let winState2 = toMatrix(generateBoard(numTiles, -1));
+
+    let [currentRow, currentCol] = [0,0];
+    
+    const directions = ['right', 'down', 'left', 'up'];
+    let currDirection = 0;
+    
+    let [rightCount, downCount, leftCount, upCount] = [0,0,0,0];
+    let tileValue = 1;
+    let [row, col] = [currentRow, currentCol];
+    while(tileValue <= Math.pow(numTiles,2)){
+        switch(directions[currDirection]) {
+            case 'right':
+                col = upCount;
+                while(col < numTiles - downCount){
+                    winState2[currentRow][col] = tileValue;
+                    tileValue++;
+                    col++;
+                }
+                currentCol = col-1;
+                rightCount++;
+                break;
+            case 'down':
+                row = rightCount;
+                while(row < numTiles - leftCount){
+                    winState2[row][currentCol] = tileValue;
+                    tileValue++;
+                    row++
+                }
+                currentRow = row-1;
+                downCount++;
+                break;
+            case 'left':
+                col = numTiles - downCount - 1;
+                while(col >= 0 + upCount){
+                    winState2[currentRow][col] = tileValue;
+                    tileValue++;
+                    col--;
+                }
+                currentCol = col+1;
+                leftCount++;
+                break;
+            case 'up':
+                row = numTiles - leftCount - 1;
+                while(row >=0 + rightCount){
+                    winState2[row][currentCol] = tileValue;
+                    tileValue++;
+                    row--
+                }
+                currentRow = row+1;
+                upCount++;
+                break;
+        }
+
+        currDirection = currDirection == 3 ? 0: currDirection + 1;
     }
-    board.push(0);
-    board = randomize(board);
+
+    winState2[currentRow][currentCol] = 0;
+
+    winStates[1] = winState2;
+}
+
+const generateBoard = (numTiles, defValue) => {
+    let board = []
+    for(let i = 1; i < Math.pow(numTiles,2); i++){
+        board.push(defValue ?? i);
+    }
+    board.push(defValue ?? 0);
     return board;
 }
 
@@ -54,50 +119,13 @@ const randomize = (values) => {
     return values;
 }
 
-// https://stackoverflow.com/questions/34570344/check-if-15-puzzle-is-solvable#34570524
-// Code by cody-gray https://stackoverflow.com/users/366904/cody-gray
-const isSolvable = (puzzle) =>
-{
-    let parity = 0;
-    let gridWidth = 4;
-    let row = 0; // the current row we are on
-    let blankRow = 0; // the row with the blank tile
-
-    for (let i = 0; i < puzzle.length; i++)
-    {
-        if (i % gridWidth == 0) { // advance to next row
-            row++;
-        }
-        if (puzzle[i] == 0) { // the blank tile
-            blankRow = row; // save the row on which encountered
-            continue;
-        }
-        for (let j = i + 1; j < puzzle.length; j++)
-        {
-            if (puzzle[i] > puzzle[j] && puzzle[j] != 0)
-            {
-                parity++;
-            }
-        }
-    }
-
-    if (gridWidth % 2 == 0) { // even grid
-        if (blankRow % 2 == 0) { // blank on odd row; counting from bottom
-            return parity % 2 == 0;
-        } else { // blank on even row; counting from bottom
-            return parity % 2 != 0;
-        }
-    } else { // odd grid
-        return parity % 2 == 0;
-    }
-}
-
-const toMatrix = () => {
-    let newBoard = new Array(4);
+const toMatrix = (board) => {
+    const width = Math.sqrt(board.length);
+    let newBoard = new Array(width);
     let counter = 0;
-    for(let i=0; i<4; i++){
-        newBoard[i] = new Array(4);
-        for(let j=0; j<4; j++){
+    for(let i=0; i<width; i++){
+        newBoard[i] = new Array(width);
+        for(let j=0; j<width; j++){
             newBoard[i][j] = board[counter];
             counter++;
         }
@@ -105,14 +133,36 @@ const toMatrix = () => {
     return newBoard;
 }
 
+const generateDocBoard = () => {
+    let docBoard = document.getElementById('board');
+    docBoard.style.gridTemplateColumns = `repeat(${numTiles}, auto)`;
+    for(let row=0; row < numTiles; row++){
+        for(let col=0; col < numTiles; col++){
+            let tileValue = board[row][col];
+            
+            let tile = document.createElement('div');
+            tile.classList.add('tile');
+            tile.id = `t${tileValue}`;
+            if(tileValue !=0){
+                tile.innerText = tileValue;
+                tile.setAttribute('onclick', `tileClicked(${tileValue})`);
+            }
+
+            docBoard.appendChild(tile);
+        }
+    }
+};
+
 const displayBoard = () => {
     let counter = 0;
-    for(let i=0; i<4; i++){
-        for(let j=0; j<4; j++){
+    for(let i=0; i<numTiles; i++){
+        for(let j=0; j<numTiles; j++){
             let tileID = `t${board[i][j]}`;
-            document.getElementById(tileID).style.order = counter;
+            let tiledoc = document.getElementById(tileID);
+            tiledoc.style.order = counter;
             if(tileID == 't0'){
                 currentSpace = [i,j];
+                tiledoc.classList.add('empty');
             }
             counter++;
         }
@@ -122,9 +172,9 @@ const displayBoard = () => {
 }
 
 const checkWinState = () => {
-    for(let row = 0; row < 4; row++) {
-        for(let col = 0; col < 4; col++) {
-            if(board[row][col] != winState[row][col]) {
+    for(let row = 0; row < numTiles; row++) {
+        for(let col = 0; col < numTiles; col++) {
+            if(board[row][col] != winStates[0][row][col] && board[row][col] != winStates[1][row][col]) {
                 return false;
             }
         }
@@ -173,7 +223,7 @@ const getAdjacentTiles = () => {
     }
 
     // Lower
-    if(currentSpace[0] + 1 <= 3) {
+    if(currentSpace[0] + 1 <= numTiles-1) {
         let row = currentSpace[0] + 1;
         let col = currentSpace[1];
         adjacentTiles.push(board[row][col]);
@@ -187,7 +237,7 @@ const getAdjacentTiles = () => {
     }
 
     // Right
-    if(currentSpace[1] + 1 <= 3) {
+    if(currentSpace[1] + 1 <= numTiles-1) {
         let row = currentSpace[0];
         let col = currentSpace[1] + 1;
         adjacentTiles.push(board[row][col]);
@@ -223,7 +273,7 @@ const tileClicked = (clickedID) => {
 const swapTiles = (clickedID) => {
     // Find the position of the clicked tile
     let position;
-    for(let row = 0; row<4; row++){
+    for(let row = 0; row<numTiles; row++){
         let col = board[row].indexOf(clickedID);
         if(col != -1){
             position = [row, col];
